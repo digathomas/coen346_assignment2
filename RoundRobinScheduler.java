@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class RoundRobinScheduler {
+public class RoundRobinScheduler extends Thread{
 
     public static void main(String[] args) {
         try {
@@ -44,12 +44,17 @@ public class RoundRobinScheduler {
                 move(ready, running);
                 writer.write("Time " + time + ", Process " + running.get(0).getStartingTime() + ", Started\n");
 
-                //PAUSE THIS THREAD
                 writer.write("Time " + time + ", Process " + running.get(0).getStartingTime() + ", Resumed\n");
+                // PAUSE THIS THREAD
+
                 running.get(0).run();
-                time++;
+
+                // RESUME THIS TREAD
+                time = time + running.get(0).getAllowedTime();
+                for (int j = 0; j < ready.size(); j++) {
+                    ready.get(j).addWaitingTime(running.get(0).getAllowedTime());
+                }
                 writer.write("Time " + time + ", Process " + running.get(0).getStartingTime() + ", Paused\n");
-                //RESUME THIS TREAD
 
                 if (running.get(0).isFinished()) {
                     writer.write("Time " + time + ", Process " + running.get(0).getStartingTime() + ", Finished\n");
@@ -59,9 +64,9 @@ public class RoundRobinScheduler {
                 }
             }
 
-            writer.write("\n");
+            writer.write("--------------\n");
 
-            while (terminated.size() != numProcess) {
+            while (terminated.size() < numProcess) {
                 // Find shortest remaining time through processes in ready queue
                 if (ready.size() != 0) {
                     int indexShortestRemainingTime = 0;
@@ -75,12 +80,17 @@ public class RoundRobinScheduler {
                     move(ready, running, indexShortestRemainingTime);
                 }
 
-                //PAUSE THIS THREAD
                 writer.write("Time " + time + ", Process " + running.get(0).getStartingTime() + ", Resumed\n");
+                // PAUSE THIS THREAD
+
                 running.get(0).run();
-                time++;
+
+                // RESUME THIS TREAD
+                time = time + running.get(0).getAllowedTime();
+                for (int j = 0; j < ready.size(); j++) {
+                    ready.get(j).addWaitingTime(running.get(0).getAllowedTime());
+                }
                 writer.write("Time " + time + ", Process " + running.get(0).getStartingTime() + ", Paused\n");
-                //RESUME THIS TREAD
 
                 if (running.get(0).isFinished()) {
                     writer.write("Time " + time + ", Process " + running.get(0).getStartingTime() + ", Finished\n");

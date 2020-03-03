@@ -1,4 +1,4 @@
-public class Process {
+public class Process extends Thread{
 
     private int startingTime;
     private int remainingTime;
@@ -6,26 +6,10 @@ public class Process {
     private int allowedTime;
 
     public Process(int newStartingTime, int newRemainingTime, int newAllowedTime) {
-        this.startingTime = newStartingTime;
-        this.remainingTime = newRemainingTime;
-        this.waitingTime = 0;
-        this.allowedTime = (int) Math.ceil(remainingTime * 0.1); // rounded up for no 0
-    }
-
-    public void setStartingTime(int newStartingTime) {
-        this.startingTime = newStartingTime;
-    }
-
-    public void setRemainingTime(int newRemainingTime) {
-        this.remainingTime = newRemainingTime;
-    }
-
-    public void setWaitingTime(int newWaitingTime) {
-        this.waitingTime = newWaitingTime;
-    }
-
-    public void setAllowedTime() {
-        this.allowedTime = (int) Math.ceil(remainingTime * 0.1); // rounded up for no 0;
+        startingTime = newStartingTime;
+        remainingTime = newRemainingTime;
+        waitingTime = 0;
+        allowedTime = (int) Math.ceil(remainingTime * 0.1); // rounded up for no 0
     }
 
     public int getStartingTime() {
@@ -52,7 +36,12 @@ public class Process {
         }
     }
 
+    public void addWaitingTime(int time) {
+        waitingTime = waitingTime + time;
+    }
+
     public void run() {
-        remainingTime--;
+        this.allowedTime = (int) Math.ceil(remainingTime * 0.1); // rounded up for no 0;
+        remainingTime = remainingTime - allowedTime;
     }
 }
