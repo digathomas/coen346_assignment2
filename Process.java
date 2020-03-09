@@ -5,7 +5,7 @@ public class Process extends Thread{
     private int waitingTime;
     private int allowedTime;
 
-    public Process(int newStartingTime, int newRemainingTime, int newAllowedTime) {
+    public Process(int newStartingTime, int newRemainingTime) {
         startingTime = newStartingTime;
         remainingTime = newRemainingTime;
         waitingTime = 0;
