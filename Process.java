@@ -1,4 +1,4 @@
-public class Process extends Thread{
+public class Process extends Thread {
 
     private int startingTime;
     private int remainingTime;
@@ -37,11 +37,18 @@ public class Process extends Thread{
     }
 
     public void addWaitingTime(int time) {
-        waitingTime = waitingTime + time;
+        waitingTime += time;
     }
 
     public void run() {
-        this.allowedTime = (int) Math.ceil(remainingTime * 0.1); // rounded up for no 0;
-        remainingTime = remainingTime - allowedTime;
+        this.allowedTime = (int) Math.ceil(remainingTime * 0.1); // rounded up for no 0
+        
+        // Check if process finishes before allowed time
+        if (this.remainingTime < this.allowedTime) {
+            this.allowedTime = this.remainingTime;
+        }
+
+        // Update remaining time
+        remainingTime -= allowedTime;
     }
 }

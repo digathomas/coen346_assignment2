@@ -27,6 +27,7 @@ public class RoundRobinScheduler extends Thread {
                 System.out.print(tempArray.get(i)[1] + "\n");
             }
 
+            // Create all queues
             FileWriter writer = new FileWriter("output.txt", false); // clears file and appends
             writer.write("Round Robin Scheduler: \n\n");
             int time = 1;
@@ -38,6 +39,7 @@ public class RoundRobinScheduler extends Thread {
             // List<Process> waiting = new ArrayList<Process>(); // max size: numProcess
             List<Process> terminated = new ArrayList<Process>(); // max size: numProcess
 
+            // Create all processes
             for (int i = 0; i < numProcess; i++) {
                 arrival.add(new Process(tempArray.get(i)[0], tempArray.get(i)[1]));
             }
@@ -72,12 +74,14 @@ public class RoundRobinScheduler extends Thread {
                     move(ready, running, indexShortestRemainingTime);
                 }
 
+                // Resumed process
                 writer.write("Time " + time + ", Process " + running.get(0).getStartingTime() + ", Resumed\n");
+
                 // PAUSE THIS THREAD
-
                 running.get(0).run();
-
                 // RESUME THIS TREAD
+
+                // Manage time of scheduler and processes
                 time = time + running.get(0).getAllowedTime();
                 for (int j = 0; j < arrival.size(); j++) {
                     arrival.get(j).addWaitingTime(running.get(0).getAllowedTime());
@@ -85,6 +89,7 @@ public class RoundRobinScheduler extends Thread {
                 for (int j = 0; j < ready.size(); j++) {
                     ready.get(j).addWaitingTime(running.get(0).getAllowedTime());
                 }
+
                 // Paused process
                 writer.write("Time " + time + ", Process " + running.get(0).getStartingTime() + ", Paused\n");
 
@@ -92,7 +97,7 @@ public class RoundRobinScheduler extends Thread {
                 if (running.get(0).isFinished()) {
                     writer.write("Time " + time + ", Process " + running.get(0).getStartingTime() + ", Finished\n");
                     move(running, terminated);
-                } 
+                }
                 // Interrupted process
                 else {
                     move(running, ready);
@@ -110,12 +115,12 @@ public class RoundRobinScheduler extends Thread {
             while (terminated.size() != 0) {
                 int indexSoonestStartingTime = 0;
                 int soonestStartingTime = terminated.get(indexSoonestStartingTime).getStartingTime();
-                    for (int i = 0; i < terminated.size(); i++) {
-                        if (terminated.get(i).getStartingTime() < soonestStartingTime) {
-                            soonestStartingTime = terminated.get(i).getStartingTime();
-                            indexSoonestStartingTime = i;
-                        }
+                for (int i = 0; i < terminated.size(); i++) {
+                    if (terminated.get(i).getStartingTime() < soonestStartingTime) {
+                        soonestStartingTime = terminated.get(i).getStartingTime();
+                        indexSoonestStartingTime = i;
                     }
+                }
                 writer.write("Process " + terminated.get(indexSoonestStartingTime).getStartingTime() + ": "
                         + terminated.get(indexSoonestStartingTime).getWaitingTime() + "\n");
                 terminated.remove(indexSoonestStartingTime);
@@ -126,11 +131,13 @@ public class RoundRobinScheduler extends Thread {
         }
     }
 
+    // Move front of queue to back of queue
     public static void move(List<Process> departure, List<Process> destination) {
         destination.add(departure.get(0));
         departure.remove(0);
     }
 
+    // Move at index of queue to back of queue
     public static void move(List<Process> departure, List<Process> destination, int index) {
         destination.add(departure.get(index));
         departure.remove(index);
