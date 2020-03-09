@@ -27,6 +27,6 @@ Time 10, Process 1, Paused
 Time 10, Process 1, Finished
 --------------
 Waiting times: 
-Process 3: 0
-Process 2: 0
-Process 1: 2
+Process 3: 2
+Process 2: 2
+Process 1: 4

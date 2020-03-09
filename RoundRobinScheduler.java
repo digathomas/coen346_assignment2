@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class RoundRobinScheduler extends Thread{
+public class RoundRobinScheduler extends Thread {
 
     public static void main(String[] args) {
         try {
@@ -31,10 +31,12 @@ public class RoundRobinScheduler extends Thread{
             writer.write("Round Robin Scheduler: \n\n");
             int time = 1;
             int numProcess = tempArray.size();
-            List<Process> running = new ArrayList<Process>(); // max size of 1
-            List<Process> ready = new ArrayList<Process>(); // max size of numProcess - numCpu
-            // List<Process> waiting = new ArrayList<Process>(); // max size of numProcess
-            List<Process> terminated = new ArrayList<Process>(); // max size of numProcess
+            // List<Process> arrival = new ArrayList<Process>(); // max size: numProcess
+            List<Process> ready = new ArrayList<Process>(); // max size: numProcess - numCpu
+            // List<Process> veryready = new ArrayList<Process>();
+            List<Process> running = new ArrayList<Process>(); // max size: 1, single-core
+            // List<Process> waiting = new ArrayList<Process>(); // max size: numProcess
+            List<Process> terminated = new ArrayList<Process>(); // max size: numProcess
 
             for (int i = 0; i < numProcess; i++) {
                 ready.add(new Process(tempArray.get(i)[0], tempArray.get(i)[1], 1));
