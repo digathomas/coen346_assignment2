@@ -1,78 +1,91 @@
 public class Process implements Runnable {
 
     private Boolean cpuAccess;
-    private int startingTime;
-    private int remainingTime;
-    private int starvingTime;
-    private int waitingTime;
-    private int allowedTime;
+    private double startingTime;
+    private double remainingTime;
+    private double starvingTime;
+    private double waitingTime;
+    private double allowedTime;
 
-    public Process(int newStartingTime, int newRemainingTime) {
-        cpuAccess = false;
-        startingTime = newStartingTime;
-        remainingTime = newRemainingTime;
-        starvingTime = 0;
-        waitingTime = 0;
-        allowedTime = (int) Math.ceil(remainingTime * 0.1); // rounded up for no 0
+    public Process(double newStartingTime, double newRemainingTime) {
+        this.cpuAccess = false;
+        this.startingTime = newStartingTime;
+        this.remainingTime = newRemainingTime;
+        this.starvingTime = 0;
+        this.waitingTime = 0;
+        //this.allowedTime = (int) Math.ceil(remainingTime * 0.1); // TA instruction: to not use ints like in the example
+        this.allowedTime = this.remainingTime * 0.1; // 10% of remaining time
     }
 
     public Boolean getCpuAccess() {
-        return cpuAccess;
+        return this.cpuAccess;
     }
 
-    public int getStartingTime() {
-        return startingTime;
+    public double getStartingTime() {
+        return this.startingTime;
     }
 
-    public int getRemainingTime() {
-        return remainingTime;
+    public double getRemainingTime() {
+        return this.remainingTime;
     }
 
-    public int getStarvingTime() {
-        return starvingTime;
+    public double getStarvingTime() {
+        return this.starvingTime;
     }
 
-    public int getWaitingTime() {
-        return waitingTime;
+    public double getWaitingTime() {
+        return this.waitingTime;
     }
 
-    public int getAllowedTime() {
-        return allowedTime;
+    public double getAllowedTime() {
+        return this.allowedTime;
     }
 
     public Boolean isFinished() {
-        if (remainingTime > 0) {
+        if (this.remainingTime > 0) {
             return false;
         } else {
             return true;
         }
     }
 
-    public void addWaitingTime(int time) {
-        waitingTime += time;
-        starvingTime += time;
+    public void addWaitingTime(double time) {
+        this.waitingTime += time;
+        this.starvingTime += time;
     }
 
     public void run() {
 
         // Lock cpu access
-        cpuAccess = true;
+        this.cpuAccess = true;
 
         // Reset starving time
         this.starvingTime = 0;
 
         // Compute allowed time
-        this.allowedTime = (int) Math.ceil(remainingTime * 0.1); // rounded up for no 0
-        
+        //this.allowedTime = (int) Math.ceil(remainingTime * 0.1); // TA instruction: to not use ints like in the example
+        if (this.remainingTime < 0.5) {
+            // Prevent too much overhead with the context switches
+            // Prevent from infinite loop.
+            this.allowedTime = this.remainingTime; // Finish this process
+        } 
+        else {
+            this.allowedTime = this.remainingTime * 0.1; // 10% of remaining time
+        }
+
         // Check if process finishes before allowed time
         if (this.remainingTime < this.allowedTime) {
             this.allowedTime = this.remainingTime;
         }
 
         // Update remaining time
-        remainingTime -= allowedTime;
+        this.remainingTime -= this.allowedTime;
+
+        for(int i = 0; i < 25; i++){
+            System.out.print(i + ". PROCESS\n");
+        }
 
         // Unlock cpu access
-        cpuAccess = false;
+        this.cpuAccess = false;
     }
 }

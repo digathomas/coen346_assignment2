@@ -1,4 +1,5 @@
 import java.io.*;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -30,10 +31,11 @@ public class RoundRobinScheduler implements Runnable {
             // Create all queues
             FileWriter writer = new FileWriter("output.txt", false); // clears file and appends
             writer.write("Round Robin Scheduler: \n\n");
-            int time = 1;
+            DecimalFormat df0 = new DecimalFormat("0"); // Display 0 decimal places in output.txt
+            DecimalFormat df2 = new DecimalFormat("0.00"); // Display 2 decimal places in output.txt
+            double time = 1;
             int numProcess = tempArray.size();
             List<Process> arrival = new ArrayList<Process>(); // max size: numProcess // new key word can't be used
-            List<Process> ready_starved = new ArrayList<Process>(); // max size: numProcess - numCpu
             List<Process> ready = new ArrayList<Process>(); // max size: numProcess - numCpu
             // List<Process> veryready = new ArrayList<Process>();
             List<Process> running = new ArrayList<Process>(); // max size: 1, single-core
@@ -47,55 +49,72 @@ public class RoundRobinScheduler implements Runnable {
 
             while (terminated.size() < numProcess) {
 
-                // Transfer starved processes in ready queue to ready_starved queue with higher priority
-                // https://softwareengineering.stackexchange.com/questions/324742/how-to-properly-deal-with-starvation
-                for (int i = 0; i < ready.size(); i++) {
-                    if (ready.get(i).getStarvingTime() > 5) {
-                        move(ready, ready_starved, i);
-                    }
-                }
-
                 // Check for arrivals
                 if (arrival.size() != 0) {
                     int indexSoonestStartingTime = 0;
-                    int soonestStartingTime = arrival.get(indexSoonestStartingTime).getStartingTime();
+                    double soonestStartingTime = arrival.get(indexSoonestStartingTime).getStartingTime();
                     for (int i = 0; i < arrival.size(); i++) {
-                        if (arrival.get(i).getStartingTime() < soonestStartingTime) {
-                            soonestStartingTime = arrival.get(i).getStartingTime();
+                        double tempSoonestStartingTime = arrival.get(i).getStartingTime();
+                        if (tempSoonestStartingTime < soonestStartingTime) {
+                            soonestStartingTime = tempSoonestStartingTime;
                             indexSoonestStartingTime = i;
                         }
                     }
                     move(arrival, running, indexSoonestStartingTime);
-                    writer.write("Time " + time + ", Process " + running.get(0).getStartingTime() + ", Started\n");
-                }
-
-                // Check for starved ready processes
-                else if (ready_starved.size() != 0) {
-                    move(ready_starved, running);
-                    writer.write("Time " + time + ", Process " + running.get(0).getStartingTime() + ", Started\n");
+                    // Changed instruction format to clearer table format
+                    writer.write("[Time " + df2.format(time) + "]\t\t[Process "
+                            + df0.format(running.get(0).getStartingTime()) + "]\t[Started]\t[Remaining "
+                            + df2.format(running.get(0).getRemainingTime()) + "]\t[Starved "
+                            + df2.format(running.get(0).getStarvingTime()) + "]\t\t---- start ----\n");
                 }
 
                 // Check for ready processes
-                // Find shortest remaining time through processes in ready queue
+                // Find shortest remaining time through processes in ready queue with it's
+                // starvation time in mind
+                // https://softwareengineering.stackexchange.com/questions/324742/how-to-properly-deal-with-starvation
                 else if (ready.size() != 0) {
-                    int indexShortestRemainingTime = 0;
-                    int shortestRemainingTime = ready.get(indexShortestRemainingTime).getRemainingTime();
+                    // These constants depend on the context, vary them to the needed use case
+                    // A bigger constant gives more importance to starvation and less importance to
+                    // shortest remaining time
+                    int indexNextPriority = 0;
+                    // Controls starvation's weight against remaining time, grows linearly
+                    double starvationConstant = 1;
+                    // Controls starvation's increase in weight as process gets older in ready
+                    // queue, grows exponentinally
+                    double starvationBase = 1.8;
+
+                    double nextPriority = Math.pow(starvationBase,
+                            starvationConstant * ready.get(indexNextPriority).getStarvingTime())
+                            + (1 / ready.get(indexNextPriority).getRemainingTime());
+
                     for (int i = 0; i < ready.size(); i++) {
-                        if (ready.get(i).getRemainingTime() < shortestRemainingTime) {
-                            shortestRemainingTime = ready.get(i).getRemainingTime();
-                            indexShortestRemainingTime = i;
+                        double tempNextPriority = Math.pow(starvationBase,
+                                (starvationConstant * ready.get(i).getStarvingTime()))
+                                + (1 / ready.get(i).getRemainingTime());
+                        if (tempNextPriority > nextPriority) {
+                            nextPriority = tempNextPriority;
+                            indexNextPriority = i;
                         }
                     }
-                    move(ready, running, indexShortestRemainingTime);
+                    move(ready, running, indexNextPriority);
                 }
 
                 // Resumed process
-                writer.write("Time " + time + ", Process " + running.get(0).getStartingTime() + ", Resumed\n");
+                writer.write(
+                        "[Time " + df2.format(time) + "]\t\t[Process " + df0.format(running.get(0).getStartingTime())
+                                + "]\t[Resumed]\t[Remaining " + df2.format(running.get(0).getRemainingTime())
+                                + "]\t[Starved " + df2.format(running.get(0).getStarvingTime()) + "]\n");
 
-                // PAUSE THIS THREAD -------------------------------------------------------------------------------------------------------
+                // PAUSE THIS THREAD
+                // -------------------------------------------------------------------------------------------------------
                 running.get(0).run();
-                while(running.get(0).getCpuAccess());
-                // RESUME THIS TREAD -------------------------------------------------------------------------------------------------------
+                for (int i = 0; i < 25; i++) {
+                    System.out.print(i + ". ROUND ROBIN\n");
+                }
+                while (running.get(0).getCpuAccess())
+                    ;
+                // RESUME THIS TREAD
+                // -------------------------------------------------------------------------------------------------------
 
                 // Manage time of scheduler and processes
                 time = time + running.get(0).getAllowedTime();
@@ -107,11 +126,17 @@ public class RoundRobinScheduler implements Runnable {
                 }
 
                 // Paused process
-                writer.write("Time " + time + ", Process " + running.get(0).getStartingTime() + ", Paused\n");
+                writer.write(
+                        "[Time " + df2.format(time) + "]\t\t[Process " + df0.format(running.get(0).getStartingTime())
+                                + "]\t[Paused]\t[Remaining " + df2.format(running.get(0).getRemainingTime())
+                                + "]\t[Starved " + df2.format(running.get(0).getStarvingTime()) + "]\n");
 
                 // Finished process
                 if (running.get(0).isFinished()) {
-                    writer.write("Time " + time + ", Process " + running.get(0).getStartingTime() + ", Finished\n");
+                    writer.write("[Time " + df2.format(time) + "]\t\t[Process "
+                            + df0.format(running.get(0).getStartingTime()) + "]\t[Finished]\t[Remaining "
+                            + df2.format(running.get(0).getRemainingTime()) + "]\t[Starved "
+                            + df2.format(running.get(0).getStarvingTime()) + "]\t\t---- end ----\n");
                     move(running, terminated);
                 }
                 // Interrupted process
@@ -130,10 +155,11 @@ public class RoundRobinScheduler implements Runnable {
             writer.write("Waiting times: \n");
             while (terminated.size() != 0) {
                 int indexSoonestStartingTime = 0;
-                int soonestStartingTime = terminated.get(indexSoonestStartingTime).getStartingTime();
+                double soonestStartingTime = terminated.get(indexSoonestStartingTime).getStartingTime();
                 for (int i = 0; i < terminated.size(); i++) {
-                    if (terminated.get(i).getStartingTime() < soonestStartingTime) {
-                        soonestStartingTime = terminated.get(i).getStartingTime();
+                    double tempSoonestStartingTime = terminated.get(i).getStartingTime();
+                    if (tempSoonestStartingTime < soonestStartingTime) {
+                        soonestStartingTime = tempSoonestStartingTime;
                         indexSoonestStartingTime = i;
                     }
                 }
