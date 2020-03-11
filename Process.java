@@ -1,15 +1,23 @@
-public class Process extends Thread {
+public class Process implements Runnable {
 
+    private Boolean cpuAccess;
     private int startingTime;
     private int remainingTime;
+    private int starvingTime;
     private int waitingTime;
     private int allowedTime;
 
     public Process(int newStartingTime, int newRemainingTime) {
+        cpuAccess = false;
         startingTime = newStartingTime;
         remainingTime = newRemainingTime;
+        starvingTime = 0;
         waitingTime = 0;
         allowedTime = (int) Math.ceil(remainingTime * 0.1); // rounded up for no 0
+    }
+
+    public Boolean getCpuAccess() {
+        return cpuAccess;
     }
 
     public int getStartingTime() {
@@ -18,6 +26,10 @@ public class Process extends Thread {
 
     public int getRemainingTime() {
         return remainingTime;
+    }
+
+    public int getStarvingTime() {
+        return starvingTime;
     }
 
     public int getWaitingTime() {
@@ -38,9 +50,18 @@ public class Process extends Thread {
 
     public void addWaitingTime(int time) {
         waitingTime += time;
+        starvingTime += time;
     }
 
     public void run() {
+
+        // Lock cpu access
+        cpuAccess = true;
+
+        // Reset starving time
+        this.starvingTime = 0;
+
+        // Compute allowed time
         this.allowedTime = (int) Math.ceil(remainingTime * 0.1); // rounded up for no 0
         
         // Check if process finishes before allowed time
@@ -50,5 +71,8 @@ public class Process extends Thread {
 
         // Update remaining time
         remainingTime -= allowedTime;
+
+        // Unlock cpu access
+        cpuAccess = false;
     }
 }

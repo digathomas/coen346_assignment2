@@ -3,9 +3,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class RoundRobinScheduler extends Thread {
+public class RoundRobinScheduler implements Runnable {
 
-    public static void main(String[] args) {
+    public void run() {
         try {
             // Read input.txt
             Scanner inFile = new Scanner(new File("input.txt"));
@@ -32,7 +32,8 @@ public class RoundRobinScheduler extends Thread {
             writer.write("Round Robin Scheduler: \n\n");
             int time = 1;
             int numProcess = tempArray.size();
-            List<Process> arrival = new ArrayList<Process>(); // max size: numProcess
+            List<Process> arrival = new ArrayList<Process>(); // max size: numProcess // new key word can't be used
+            List<Process> ready_starved = new ArrayList<Process>(); // max size: numProcess - numCpu
             List<Process> ready = new ArrayList<Process>(); // max size: numProcess - numCpu
             // List<Process> veryready = new ArrayList<Process>();
             List<Process> running = new ArrayList<Process>(); // max size: 1, single-core
@@ -46,6 +47,14 @@ public class RoundRobinScheduler extends Thread {
 
             while (terminated.size() < numProcess) {
 
+                // Transfer starved processes in ready queue to ready_starved queue with higher priority
+                // https://softwareengineering.stackexchange.com/questions/324742/how-to-properly-deal-with-starvation
+                for (int i = 0; i < ready.size(); i++) {
+                    if (ready.get(i).getStarvingTime() > 5) {
+                        move(ready, ready_starved, i);
+                    }
+                }
+
                 // Check for arrivals
                 if (arrival.size() != 0) {
                     int indexSoonestStartingTime = 0;
@@ -57,6 +66,12 @@ public class RoundRobinScheduler extends Thread {
                         }
                     }
                     move(arrival, running, indexSoonestStartingTime);
+                    writer.write("Time " + time + ", Process " + running.get(0).getStartingTime() + ", Started\n");
+                }
+
+                // Check for starved ready processes
+                else if (ready_starved.size() != 0) {
+                    move(ready_starved, running);
                     writer.write("Time " + time + ", Process " + running.get(0).getStartingTime() + ", Started\n");
                 }
 
@@ -77,9 +92,10 @@ public class RoundRobinScheduler extends Thread {
                 // Resumed process
                 writer.write("Time " + time + ", Process " + running.get(0).getStartingTime() + ", Resumed\n");
 
-                // PAUSE THIS THREAD
+                // PAUSE THIS THREAD -------------------------------------------------------------------------------------------------------
                 running.get(0).run();
-                // RESUME THIS TREAD
+                while(running.get(0).getCpuAccess());
+                // RESUME THIS TREAD -------------------------------------------------------------------------------------------------------
 
                 // Manage time of scheduler and processes
                 time = time + running.get(0).getAllowedTime();
