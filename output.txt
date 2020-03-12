@@ -1,49 +1,31 @@
 Round Robin Scheduler: 
 
-[Time 01.00]		[Process 1]	[Started]	[Remaining 05.00]	[Starved 00.00]		---- start ----
-[Time 01.00]		[Process 1]	[Resumed]	[Remaining 05.00]	[Starved 00.00]
-[Time 02.00]		[Process 1]	[Paused]	[Remaining 04.00]	[Starved 00.00]
-[Time 02.00]		[Process 2]	[Started]	[Remaining 03.00]	[Starved 01.00]		---- start ----
-[Time 02.00]		[Process 2]	[Resumed]	[Remaining 03.00]	[Starved 01.00]
-[Time 03.00]		[Process 2]	[Paused]	[Remaining 02.00]	[Starved 00.00]
-[Time 03.00]		[Process 3]	[Started]	[Remaining 10.00]	[Starved 02.00]		---- start ----
-[Time 03.00]		[Process 3]	[Resumed]	[Remaining 10.00]	[Starved 02.00]
-[Time 04.00]		[Process 3]	[Paused]	[Remaining 09.00]	[Starved 00.00]
-[Time 04.00]		[Process 2]	[Resumed]	[Remaining 02.00]	[Starved 01.00]
-[Time 05.00]		[Process 2]	[Paused]	[Remaining 01.00]	[Starved 00.00]
-[Time 05.00]		[Process 2]	[Resumed]	[Remaining 01.00]	[Starved 00.00]
-[Time 06.00]		[Process 2]	[Paused]	[Remaining 00.00]	[Starved 00.00]
-[Time 06.00]		[Process 2]	[Finished]	[Remaining 00.00]	[Starved 00.00]		---- end ----
-[Time 06.00]		[Process 1]	[Resumed]	[Remaining 04.00]	[Starved 04.00]
-[Time 07.00]		[Process 1]	[Paused]	[Remaining 03.00]	[Starved 00.00]
-[Time 07.00]		[Process 1]	[Resumed]	[Remaining 03.00]	[Starved 00.00]
-[Time 08.00]		[Process 1]	[Paused]	[Remaining 02.00]	[Starved 00.00]
-[Time 08.00]		[Process 3]	[Resumed]	[Remaining 09.00]	[Starved 04.00]
-[Time 09.00]		[Process 3]	[Paused]	[Remaining 08.00]	[Starved 00.00]
-[Time 09.00]		[Process 1]	[Resumed]	[Remaining 02.00]	[Starved 01.00]
-[Time 10.00]		[Process 1]	[Paused]	[Remaining 01.00]	[Starved 00.00]
-[Time 10.00]		[Process 1]	[Resumed]	[Remaining 01.00]	[Starved 00.00]
-[Time 11.00]		[Process 1]	[Paused]	[Remaining 00.00]	[Starved 00.00]
-[Time 11.00]		[Process 1]	[Finished]	[Remaining 00.00]	[Starved 00.00]		---- end ----
-[Time 11.00]		[Process 3]	[Resumed]	[Remaining 08.00]	[Starved 02.00]
-[Time 12.00]		[Process 3]	[Paused]	[Remaining 07.00]	[Starved 00.00]
-[Time 12.00]		[Process 3]	[Resumed]	[Remaining 07.00]	[Starved 00.00]
-[Time 13.00]		[Process 3]	[Paused]	[Remaining 06.00]	[Starved 00.00]
-[Time 13.00]		[Process 3]	[Resumed]	[Remaining 06.00]	[Starved 00.00]
-[Time 14.00]		[Process 3]	[Paused]	[Remaining 05.00]	[Starved 00.00]
-[Time 14.00]		[Process 3]	[Resumed]	[Remaining 05.00]	[Starved 00.00]
-[Time 15.00]		[Process 3]	[Paused]	[Remaining 04.00]	[Starved 00.00]
-[Time 15.00]		[Process 3]	[Resumed]	[Remaining 04.00]	[Starved 00.00]
-[Time 16.00]		[Process 3]	[Paused]	[Remaining 03.00]	[Starved 00.00]
-[Time 16.00]		[Process 3]	[Resumed]	[Remaining 03.00]	[Starved 00.00]
-[Time 17.00]		[Process 3]	[Paused]	[Remaining 02.00]	[Starved 00.00]
-[Time 17.00]		[Process 3]	[Resumed]	[Remaining 02.00]	[Starved 00.00]
-[Time 18.00]		[Process 3]	[Paused]	[Remaining 01.00]	[Starved 00.00]
-[Time 18.00]		[Process 3]	[Resumed]	[Remaining 01.00]	[Starved 00.00]
-[Time 19.00]		[Process 3]	[Paused]	[Remaining 00.00]	[Starved 00.00]
-[Time 19.00]		[Process 3]	[Finished]	[Remaining 00.00]	[Starved 00.00]		---- end ----
+[Time 01]		[Process 1]	[Started]	[Remaining 05]	[Starved 00]		---- start ----
+[Time 01]		[Process 1]	[Resumed]	[Remaining 05]	[Starved 00]
+[Time 02]		[Process 1]	[Paused]	[Remaining 04]	[Starved 00]
+[Time 02]		[Process 2]	[Started]	[Remaining 03]	[Starved 01]		---- start ----
+[Time 02]		[Process 2]	[Resumed]	[Remaining 03]	[Starved 01]
+[Time 03]		[Process 2]	[Paused]	[Remaining 02]	[Starved 00]
+[Time 03]		[Process 3]	[Started]	[Remaining 01]	[Starved 02]		---- start ----
+[Time 03]		[Process 3]	[Resumed]	[Remaining 01]	[Starved 02]
+[Time 04]		[Process 3]	[Paused]	[Remaining 00]	[Starved 00]
+[Time 04]		[Process 3]	[Finished]	[Remaining 00]	[Starved 00]		---- end ----
+[Time 04]		[Process 2]	[Resumed]	[Remaining 02]	[Starved 01]
+[Time 05]		[Process 2]	[Paused]	[Remaining 01]	[Starved 00]
+[Time 05]		[Process 2]	[Resumed]	[Remaining 01]	[Starved 00]
+[Time 06]		[Process 2]	[Paused]	[Remaining 00]	[Starved 00]
+[Time 06]		[Process 2]	[Finished]	[Remaining 00]	[Starved 00]		---- end ----
+[Time 06]		[Process 1]	[Resumed]	[Remaining 04]	[Starved 04]
+[Time 07]		[Process 1]	[Paused]	[Remaining 03]	[Starved 00]
+[Time 07]		[Process 1]	[Resumed]	[Remaining 03]	[Starved 00]
+[Time 08]		[Process 1]	[Paused]	[Remaining 02]	[Starved 00]
+[Time 08]		[Process 1]	[Resumed]	[Remaining 02]	[Starved 00]
+[Time 09]		[Process 1]	[Paused]	[Remaining 01]	[Starved 00]
+[Time 09]		[Process 1]	[Resumed]	[Remaining 01]	[Starved 00]
+[Time 10]		[Process 1]	[Paused]	[Remaining 00]	[Starved 00]
+[Time 10]		[Process 1]	[Finished]	[Remaining 00]	[Starved 00]		---- end ----
 --------------
 Waiting times: 
-Process 1.0: 5.0
-Process 2.0: 2.0
-Process 3.0: 8.0
+Process 1: 04
+Process 2: 02
+Process 3: 02

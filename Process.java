@@ -6,6 +6,7 @@ public class Process implements Runnable {
     private double starvingTime;
     private double waitingTime;
     private double allowedTime;
+    private Thread thread;
 
     public Process(double newStartingTime, double newRemainingTime) {
         this.cpuAccess = false;
@@ -13,8 +14,17 @@ public class Process implements Runnable {
         this.remainingTime = newRemainingTime;
         this.starvingTime = 0;
         this.waitingTime = 0;
-        //this.allowedTime = this.remainingTime * 0.1; // 10% of remaining time
         this.setAllowedTimeRounded();
+        thread = new Thread(new Runnable() {
+            public void run() {
+                /*
+                while(true) {
+                    System.out.print("$");
+                }
+                */
+            }
+        });
+        thread.start();
     }
 
     public Boolean getCpuAccess() {

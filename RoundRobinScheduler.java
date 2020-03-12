@@ -6,6 +6,18 @@ import java.util.Scanner;
 
 public class RoundRobinScheduler implements Runnable {
 
+    public static void main(String[] args) {
+        try {
+            System.out.print("Start Runnable Thread RoundRobinScheduler\n");
+            Thread robin = new Thread(new RoundRobinScheduler(), "t1");
+            robin.start();
+            robin.join();
+            System.out.print("End Runnable Thread RoundRobinScheduler\n");
+        } catch (InterruptedException e) {
+            System.out.println(e);
+        }
+    }
+
     public void run() {
         try {
             // Read input.txt
@@ -32,7 +44,7 @@ public class RoundRobinScheduler implements Runnable {
             FileWriter writer = new FileWriter("output.txt", false); // clears file and appends
             writer.write("Round Robin Scheduler: \n\n");
             DecimalFormat df0 = new DecimalFormat("0"); // Display 0 decimal places in output.txt
-            DecimalFormat df2 = new DecimalFormat("00.00"); // Display 2 decimal places in output.txt
+            DecimalFormat df2 = new DecimalFormat("00"); // Display 2 decimal places in output.txt
             double time = 1;
             int numProcess = tempArray.size();
             List<Process> arrival = new ArrayList<Process>(); // max size: numProcess // new key word can't be used
@@ -164,8 +176,8 @@ public class RoundRobinScheduler implements Runnable {
                         indexSoonestStartingTime = i;
                     }
                 }
-                writer.write("Process " + terminated.get(indexSoonestStartingTime).getStartingTime() + ": "
-                        + terminated.get(indexSoonestStartingTime).getWaitingTime() + "\n");
+                writer.write("Process " + df0.format(terminated.get(indexSoonestStartingTime).getStartingTime()) + ": "
+                        + df2.format(terminated.get(indexSoonestStartingTime).getWaitingTime()) + "\n");
                 terminated.remove(indexSoonestStartingTime);
             }
             writer.close();
