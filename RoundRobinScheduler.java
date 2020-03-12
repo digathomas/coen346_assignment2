@@ -32,7 +32,7 @@ public class RoundRobinScheduler implements Runnable {
             FileWriter writer = new FileWriter("output.txt", false); // clears file and appends
             writer.write("Round Robin Scheduler: \n\n");
             DecimalFormat df0 = new DecimalFormat("0"); // Display 0 decimal places in output.txt
-            DecimalFormat df2 = new DecimalFormat("0.00"); // Display 2 decimal places in output.txt
+            DecimalFormat df2 = new DecimalFormat("00.00"); // Display 2 decimal places in output.txt
             double time = 1;
             int numProcess = tempArray.size();
             List<Process> arrival = new ArrayList<Process>(); // max size: numProcess // new key word can't be used
@@ -73,23 +73,24 @@ public class RoundRobinScheduler implements Runnable {
                 // starvation time in mind
                 // https://softwareengineering.stackexchange.com/questions/324742/how-to-properly-deal-with-starvation
                 else if (ready.size() != 0) {
+                    int indexNextPriority = 0;
                     // These constants depend on the context, vary them to the needed use case
                     // A bigger constant gives more importance to starvation and less importance to
                     // shortest remaining time
-                    int indexNextPriority = 0;
+
                     // Controls starvation's weight against remaining time, grows linearly
-                    double starvationConstant = 1;
+                    double starvationConstant = 0.001;
                     // Controls starvation's increase in weight as process gets older in ready
                     // queue, grows exponentinally
-                    double starvationBase = 1.8;
+                    double starvationBase = 5;
 
-                    double nextPriority = Math.pow(starvationBase,
-                            starvationConstant * ready.get(indexNextPriority).getStarvingTime())
+                    double nextPriority = starvationConstant
+                            * Math.pow(starvationBase, ready.get(indexNextPriority).getStarvingTime())
                             + (1 / ready.get(indexNextPriority).getRemainingTime());
 
                     for (int i = 0; i < ready.size(); i++) {
-                        double tempNextPriority = Math.pow(starvationBase,
-                                (starvationConstant * ready.get(i).getStarvingTime()))
+                        double tempNextPriority = starvationConstant
+                                * Math.pow(starvationBase, ready.get(i).getStarvingTime())
                                 + (1 / ready.get(i).getRemainingTime());
                         if (tempNextPriority > nextPriority) {
                             nextPriority = tempNextPriority;

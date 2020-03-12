@@ -13,8 +13,8 @@ public class Process implements Runnable {
         this.remainingTime = newRemainingTime;
         this.starvingTime = 0;
         this.waitingTime = 0;
-        //this.allowedTime = (int) Math.ceil(remainingTime * 0.1); // TA instruction: to not use ints like in the example
-        this.allowedTime = this.remainingTime * 0.1; // 10% of remaining time
+        //this.allowedTime = this.remainingTime * 0.1; // 10% of remaining time
+        this.setAllowedTimeRounded();
     }
 
     public Boolean getCpuAccess() {
@@ -41,6 +41,21 @@ public class Process implements Runnable {
         return this.allowedTime;
     }
 
+    private void setAllowedTime() {
+        if (this.remainingTime < 0.5) {
+            // Prevent too much overhead with the context switches
+            // Prevent from infinite loop.
+            this.allowedTime = this.remainingTime; // Finish this process
+        } 
+        else {
+            this.allowedTime = this.remainingTime * 0.1; // 10% of remaining time
+        }
+    }
+
+    private void setAllowedTimeRounded() {
+        this.allowedTime = (int) Math.ceil(remainingTime * 0.1); // TA instruction: to not use ints such as the example
+    }
+
     public Boolean isFinished() {
         if (this.remainingTime > 0) {
             return false;
@@ -63,15 +78,7 @@ public class Process implements Runnable {
         this.starvingTime = 0;
 
         // Compute allowed time
-        //this.allowedTime = (int) Math.ceil(remainingTime * 0.1); // TA instruction: to not use ints like in the example
-        if (this.remainingTime < 0.5) {
-            // Prevent too much overhead with the context switches
-            // Prevent from infinite loop.
-            this.allowedTime = this.remainingTime; // Finish this process
-        } 
-        else {
-            this.allowedTime = this.remainingTime * 0.1; // 10% of remaining time
-        }
+        this.setAllowedTimeRounded();
 
         // Check if process finishes before allowed time
         if (this.remainingTime < this.allowedTime) {
