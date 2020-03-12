@@ -3,6 +3,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.Semaphore;
 
 public class RoundRobinScheduler implements Runnable {
 
@@ -33,30 +34,25 @@ public class RoundRobinScheduler implements Runnable {
             }
             inFile.close();
 
-            // Print input.txt
-            System.out.print("input.txt\n");
-            for (int i = 0; i < tempArray.size(); i++) {
-                System.out.print(tempArray.get(i)[0] + "\t");
-                System.out.print(tempArray.get(i)[1] + "\n");
-            }
-
             // Create all queues
             FileWriter writer = new FileWriter("output.txt", false); // clears file and appends
             writer.write("Round Robin Scheduler: \n\n");
             DecimalFormat df0 = new DecimalFormat("0"); // Display 0 decimal places in output.txt
             DecimalFormat df2 = new DecimalFormat("00"); // Display 2 decimal places in output.txt
             double time = 1;
+            Semaphore cpuAccess = new Semaphore(1); // 1 available permit to be aquired
             int numProcess = tempArray.size();
             List<Process> arrival = new ArrayList<Process>(); // max size: numProcess // new key word can't be used
             List<Process> ready = new ArrayList<Process>(); // max size: numProcess - numCpu
             // List<Process> veryready = new ArrayList<Process>();
             List<Process> running = new ArrayList<Process>(); // max size: 1, single-core
-            // List<Process> waiting = new ArrayList<Process>(); // max size: numProcess
+            // List<Process> waiting = new ArrayList<Process>(); // max size: numProcess //
+            // not used because no I/O
             List<Process> terminated = new ArrayList<Process>(); // max size: numProcess
 
             // Create all processes
             for (int i = 0; i < numProcess; i++) {
-                arrival.add(new Process(tempArray.get(i)[0], tempArray.get(i)[1]));
+                arrival.add(new Process(tempArray.get(i)[0], tempArray.get(i)[1], cpuAccess));
             }
 
             while (terminated.size() < numProcess) {
@@ -118,16 +114,8 @@ public class RoundRobinScheduler implements Runnable {
                                 + "]\t[Resumed]\t[Remaining " + df2.format(running.get(0).getRemainingTime())
                                 + "]\t[Starved " + df2.format(running.get(0).getStarvingTime()) + "]\n");
 
-                // PAUSE THIS THREAD
-                // -------------------------------------------------------------------------------------------------------
+                // Run current process
                 running.get(0).run();
-                for (int i = 0; i < 25; i++) {
-                    System.out.print(i + ". ROUND ROBIN\n");
-                }
-                while (running.get(0).getCpuAccess())
-                    ;
-                // RESUME THIS TREAD
-                // -------------------------------------------------------------------------------------------------------
 
                 // Manage time of scheduler and processes
                 time = time + running.get(0).getAllowedTime();
